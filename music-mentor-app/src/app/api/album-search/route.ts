@@ -48,7 +48,7 @@ export async function GET(request: Request) {
         seen.add(key);
         return true;
       })
-      .sort((a, b) => {
+      .sort((a: AlbumSearchResult, b: AlbumSearchResult) => {
         const aScore = normalizeText(`${a.title} ${a.artist}`).includes(normalizeText(query)) ? 1 : 0;
         const bScore = normalizeText(`${b.title} ${b.artist}`).includes(normalizeText(query)) ? 1 : 0;
         return bScore - aScore;
