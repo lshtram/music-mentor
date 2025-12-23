@@ -164,7 +164,7 @@ export const findPreviewUrlByTitleArtist = async (title: string, artistName: str
       }
     }
 
-    const first = results.find((item) => typeof item.previewUrl === 'string');
+    const first = results.find((item: { previewUrl?: unknown }) => typeof item.previewUrl === 'string');
     return first?.previewUrl || '';
   } catch (error) {
     return '';

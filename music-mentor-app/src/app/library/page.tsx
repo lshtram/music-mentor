@@ -220,7 +220,7 @@ export default function LibraryPage() {
       ) : (
         <div className="text-center py-10">
           <p className="text-gray-400">Your library is empty.</p>
-          <p className="text-gray-500 text-sm">Albums you rate or mark as 'Listened' will appear here.</p>
+          <p className="text-gray-500 text-sm">Albums you rate or mark as &apos;Listened&apos; will appear here.</p>
         </div>
       )}
 

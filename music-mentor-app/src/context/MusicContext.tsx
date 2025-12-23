@@ -118,7 +118,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadUserData();
-  }, [userId]);
+  }, [userId, accessToken]);
 
   useEffect(() => {
     if (!userId || !hasHydrated || !accessToken) return;
@@ -311,15 +311,15 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       clearTimeout(regenerationTimeoutRef.current);
     }
 
-    let updatedAlbum: Album | null = null;
-    setAlbums(prevAlbums => {
-      const now = new Date().toISOString();
-      return prevAlbums.map(a => {
-        if (a.id !== albumId) return a;
-        updatedAlbum = { ...a, ...updates, dateAdded: now };
-        return updatedAlbum;
-      });
-    });
+    const now = new Date().toISOString();
+    const currentAlbum = albums.find(a => a.id === albumId);
+    const updatedAlbum = currentAlbum
+      ? ({ ...currentAlbum, ...updates, dateAdded: now } as Album)
+      : null;
+
+    setAlbums(prevAlbums =>
+      prevAlbums.map(a => (a.id === albumId ? { ...a, ...updates, dateAdded: now } : a))
+    );
 
     if (updatedAlbum && userId && accessToken && (updatedAlbum.listened || updatedAlbum.rating !== undefined)) {
       fetch('/api/library', {
@@ -345,7 +345,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         return prev;
       });
     }, 50);
-  }, [regenerateRecommendations, userId, accessToken]);
+  }, [regenerateRecommendations, userId, accessToken, albums]);
 
   const signInWithEmail = useCallback(async (email: string) => {
     setError(null);
