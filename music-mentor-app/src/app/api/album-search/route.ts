@@ -41,8 +41,8 @@ export async function GET(request: Request) {
         const previewUrl = typeof item.previewUrl === 'string' ? item.previewUrl : undefined;
         return { title, artist, coverUrl, previewUrl };
       })
-      .filter((item) => item.title && item.artist)
-      .filter((item) => {
+      .filter((item: AlbumSearchResult) => item.title && item.artist)
+      .filter((item: AlbumSearchResult) => {
         const key = albumSeedKey(item.title, item.artist);
         if (seen.has(key)) return false;
         seen.add(key);
