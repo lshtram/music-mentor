@@ -1,0 +1,106 @@
+
+> music-mentor-app@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.3
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1888ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2s (518 modules)
+ GET / 200 in 2418ms
+ ✓ Compiled in 322ms (266 modules)
+ ○ Compiling /api/recommendations ...
+ ✓ Compiled /api/recommendations in 586ms (257 modules)
+[cover] resolve start {
+  albumId: 'a1b2c3d4-e5f6-4789-a012-34567890abcd',
+  title: 'Tehillim',
+  orig: ''
+}
+[cover] MusicBrainz query {
+  title: 'Tehillim',
+  artistName: 'Steve Reich',
+  query: 'release:"Tehillim" AND artist:"Steve Reich"'
+}
+[cover] MusicBrainz found MBID { title: 'Tehillim', mbid: '5958b1cd-b829-4b3f-8b37-28eaf00753e6' }
+[cover] CAA images { mbid: '5958b1cd-b829-4b3f-8b37-28eaf00753e6', imagesCount: 1 }
+[cover] chosen image {
+  mbid: '5958b1cd-b829-4b3f-8b37-28eaf00753e6',
+  chosen: 'http://coverartarchive.org/release/5958b1cd-b829-4b3f-8b37-28eaf00753e6/5274615784.jpg'
+}
+[cover] using MB->CAA found image {
+  albumId: 'a1b2c3d4-e5f6-4789-a012-34567890abcd',
+  url: 'https://coverartarchive.org/release/5958b1cd-b829-4b3f-8b37-28eaf00753e6/5274615784.jpg'
+}
+[cover] final assigned {
+  albumId: 'a1b2c3d4-e5f6-4789-a012-34567890abcd',
+  title: 'Tehillim',
+  coverUrl: 'https://coverartarchive.org/release/5958b1cd-b829-4b3f-8b37-28eaf00753e6/5274615784.jpg'
+}
+[cover] resolve start {
+  albumId: 'c3d4e5f6-a7b8-4901-c234-567890abcdef',
+  title: 'Drones',
+  orig: ''
+}
+[cover] MusicBrainz query {
+  title: 'Drones',
+  artistName: 'Stars of the Lid',
+  query: 'release:"Drones" AND artist:"Stars of the Lid"'
+}
+[cover] MusicBrainz no releases { title: 'Drones', artistName: 'Stars of the Lid' }
+[cover] final assigned {
+  albumId: 'c3d4e5f6-a7b8-4901-c234-567890abcdef',
+  title: 'Drones',
+  coverUrl: null
+}
+[cover] resolve start {
+  albumId: 'e5f6a7b8-c9d0-4123-e456-7890abcdef12',
+  title: 'Drums and Voice',
+  orig: ''
+}
+[cover] MusicBrainz query {
+  title: 'Drums and Voice',
+  artistName: 'Jon Hassell',
+  query: 'release:"Drums and Voice" AND artist:"Jon Hassell"'
+}
+MusicBrainz/CoverArt lookup error: fetch failed
+[cover] final assigned {
+  albumId: 'e5f6a7b8-c9d0-4123-e456-7890abcdef12',
+  title: 'Drums and Voice',
+  coverUrl: null
+}
+[cover] resolve start {
+  albumId: 'a8b9c0d1-e2f3-4345-a456-7890abcdefgh',
+  title: 'Distant Dream',
+  orig: ''
+}
+[cover] MusicBrainz query {
+  title: 'Distant Dream',
+  artistName: 'Gas',
+  query: 'release:"Distant Dream" AND artist:"Gas"'
+}
+[cover] MusicBrainz no releases { title: 'Distant Dream', artistName: 'Gas' }
+[cover] final assigned {
+  albumId: 'a8b9c0d1-e2f3-4345-a456-7890abcdefgh',
+  title: 'Distant Dream',
+  coverUrl: null
+}
+[cover] resolve start {
+  albumId: 'c0d1e2f3-a4b5-4567-c678-90abcdefghij1',
+  title: 'Dharmadhatu',
+  orig: ''
+}
+[cover] MusicBrainz query {
+  title: 'Dharmadhatu',
+  artistName: 'Pauline Anna Strom',
+  query: 'release:"Dharmadhatu" AND artist:"Pauline Anna Strom"'
+}
+MusicBrainz/CoverArt lookup error: fetch failed
+[cover] final assigned {
+  albumId: 'c0d1e2f3-a4b5-4567-c678-90abcdefghij1',
+  title: 'Dharmadhatu',
+  coverUrl: null
+}
+ POST /api/recommendations 200 in 16117ms
