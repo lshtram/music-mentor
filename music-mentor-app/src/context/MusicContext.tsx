@@ -91,7 +91,9 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     const loadUserData = async () => {
       if (!userId) return;
       try {
-        const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+        const headers: Record<string, string> = accessToken
+          ? { Authorization: `Bearer ${accessToken}` }
+          : {};
         const [promptRes, libraryRes] = await Promise.all([
           fetch(`/api/prompt`, { headers }),
           fetch(`/api/library`, { headers }),
