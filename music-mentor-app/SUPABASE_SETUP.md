@@ -12,6 +12,7 @@ SUPABASE_URL=your-project-url
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+ADMIN_SECRET=your-admin-secret
 ```
 
 Notes:
@@ -42,3 +43,7 @@ npm run dev -- -H 0.0.0.0 -p 3001
 ## What gets stored
 - User prompt per user (`user_prompts`)
 - Library albums per user (`library_albums`)
+
+## Admin panel
+- Visit `/admin` and enter `ADMIN_SECRET` to list users or reset passwords.
+- Keep `ADMIN_SECRET` private and do not expose it in client code.
