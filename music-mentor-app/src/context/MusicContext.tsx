@@ -22,7 +22,7 @@ interface MusicContextType {
   isLoading: boolean;
   error: string | null;
   userEmail: string | null;
-  signInWithEmail: (email: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string, mode: 'sign-in' | 'sign-up') => Promise<void>;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
   authReady: boolean;
@@ -347,12 +347,19 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     }, 50);
   }, [regenerateRecommendations, userId, accessToken, albums]);
 
-  const signInWithEmail = useCallback(async (email: string) => {
+  const signInWithEmail = useCallback(async (email: string, password: string, mode: 'sign-in' | 'sign-up') => {
     setError(null);
-    const { error: authError } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    });
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      setError('Email and password are required.');
+      return;
+    }
+
+    const authCall = mode === 'sign-up'
+      ? supabaseClient.auth.signUp({ email: trimmedEmail, password })
+      : supabaseClient.auth.signInWithPassword({ email: trimmedEmail, password });
+
+    const { error: authError } = await authCall;
     if (authError) {
       setError(authError.message);
     }

@@ -7,6 +7,8 @@ import { useMusic } from '@/context/MusicContext';
 export default function Header() {
   const { library, userEmail, signInWithEmail, signOut, error, authReady } = useMusic();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
   const [status, setStatus] = useState('');
 
   return (
@@ -41,16 +43,28 @@ export default function Header() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
               />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+              />
               <button
                 onClick={async () => {
                   setStatus('');
-                  if (!email.trim()) return;
-                  await signInWithEmail(email.trim());
-                  setStatus('Check your email for a sign-in link.');
+                  await signInWithEmail(email, password, mode);
+                  setStatus(mode === 'sign-up' ? 'Account created.' : 'Signed in.');
                 }}
                 className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 rounded-md"
               >
-                Sign in
+                {mode === 'sign-up' ? 'Sign up' : 'Sign in'}
+              </button>
+              <button
+                onClick={() => setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in')}
+                className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-md"
+              >
+                {mode === 'sign-in' ? 'Create account' : 'Use existing'}
               </button>
             </div>
           )}
