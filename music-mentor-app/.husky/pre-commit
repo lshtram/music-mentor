@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+cd music-mentor-app || exit 1
+npm run test
+npm run test:e2e

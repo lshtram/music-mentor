@@ -72,11 +72,11 @@ Suggested:
 - Ensure `user_seen_recommendations` prevents repeats
 - Ensure `user_recommendations` stores only 5
 
-## Proposed CI Order
+## Suggested CI Order (Lightweight)
 1) Lint + Typecheck
 2) Unit tests
-3) Integration tests
-4) E2E tests (nightly or on release branches)
+
+E2E tests run locally via the pre-commit hook.
 
 ## Feature/Test Policy
 - Every new feature must include at least one automated test.
@@ -99,7 +99,10 @@ Suggested:
 ### E2E
 - `tests/e2e/basic.spec.ts` - home loads, settings and library sign-in gating
 
-## Next Steps to Implement
-1) Add test runner config (Vitest)
-2) Add Playwright and a minimal e2e suite
-3) Wire to CI (GitHub Actions)
+## Running Tests Locally
+These run automatically before each commit via Husky:
+- `npm run test`
+- `npm run test:e2e`
+
+If you need to bypass (not recommended):
+`HUSKY=0 git commit`
