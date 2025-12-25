@@ -12,7 +12,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:ci": "npm run lint && npm run test && npm run build",
-    "postinstall": "npx playwright install --with-deps"
+    "postinstall": "if [ -z \"$CI\" ]; then npx playwright install --with-deps; fi"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
