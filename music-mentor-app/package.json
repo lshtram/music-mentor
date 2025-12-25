@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-db-schema.mjs || true",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,7 +14,8 @@
     "test:e2e": "playwright test",
     "test:ci": "npm run lint && npm run test",
     "prepare": "husky install",
-    "postinstall": "if [ -z \"$CI\" ]; then npx playwright install --with-deps; fi"
+    "postinstall": "if [ -z \"$CI\" ]; then npx playwright install --with-deps; fi",
+    "db:check": "node scripts/check-db-schema.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

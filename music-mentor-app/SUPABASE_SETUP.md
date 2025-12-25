@@ -40,6 +40,13 @@ cd /workspaces/music-mentor/music-mentor-app
 npm run dev -- -H 0.0.0.0 -p 3001
 ```
 
+## Schema verification (optional)
+Run a schema check against Supabase:
+```
+npm run db:check
+```
+Set `DB_SCHEMA_STRICT=1` to make the check fail (useful in CI).
+
 ## What gets stored
 - User prompt per user (`user_prompts`) with last user-written prompt
 - Prompt history per user (`user_prompt_history`)
