@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import { config } from 'dotenv';
+
+config({ path: '.env.local' });
 
 const requiredTables = {
   user_prompts: ['user_id', 'prompt', 'last_user_prompt', 'updated_at'],
@@ -43,32 +46,24 @@ const supabase = createClient(supabaseUrl, serviceKey, {
 const strict = process.env.DB_SCHEMA_STRICT === '1';
 let hasError = false;
 
-const fetchColumns = async (table) => {
-  const { data, error } = await supabase
-    .from('information_schema.columns')
-    .select('column_name')
-    .eq('table_schema', 'public')
-    .eq('table_name', table);
+const checkTableColumns = async (table, columns) => {
+  const { error } = await supabase
+    .from(table)
+    .select(columns.join(','))
+    .limit(1);
 
-  if (error) {
-    console.warn(`[db-check] Failed to read columns for ${table}: ${error.message}`);
-    return null;
-  }
+  if (!error) return { ok: true };
 
-  return data.map((row) => row.column_name);
+  const message = error.message || 'Unknown error';
+  return { ok: false, message };
 };
 
 const run = async () => {
   for (const [table, columns] of Object.entries(requiredTables)) {
-    const actual = await fetchColumns(table);
-    if (!actual) {
+    const result = await checkTableColumns(table, columns);
+    if (!result.ok) {
       hasError = true;
-      continue;
-    }
-    const missing = columns.filter((col) => !actual.includes(col));
-    if (missing.length > 0) {
-      hasError = true;
-      console.warn(`[db-check] Table ${table} missing columns: ${missing.join(', ')}`);
+      console.warn(`[db-check] Table ${table} missing or incomplete: ${result.message}`);
     }
   }
 

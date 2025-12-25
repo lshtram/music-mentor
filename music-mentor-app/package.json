@@ -38,6 +38,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "vitest": "^4.0.16",
-    "@vitest/coverage-v8": "^4.0.16"
+    "@vitest/coverage-v8": "^4.0.16",
+    "dotenv": "^16.4.5"
   }
 }
