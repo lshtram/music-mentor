@@ -49,19 +49,19 @@ export default function WikiSummary({ name, fallback }: WikiSummaryProps) {
   }, [name]);
 
   if (isLoading) {
-    return <p className="text-gray-400 italic">Loading summary...</p>;
+    return <p className="text-muted italic">Loading summary...</p>;
   }
 
   if (data?.exists && data.extract) {
     return (
-      <div className="space-y-3 text-gray-300 leading-relaxed">
+      <div className="space-y-3 text-muted leading-relaxed">
         <p>{data.extract}</p>
         {data.url && (
           <a
             href={data.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 text-sm font-semibold"
+            className="text-[var(--accent)] hover:underline text-sm font-semibold"
           >
             → Read more on Wikipedia
           </a>
@@ -72,7 +72,7 @@ export default function WikiSummary({ name, fallback }: WikiSummaryProps) {
 
   if (fallback) {
     return (
-      <div className="text-gray-300 space-y-3 leading-relaxed">
+      <div className="text-muted space-y-3 leading-relaxed">
         {fallback.split('\n\n').map((paragraph, idx) => (
           <p key={idx}>{paragraph}</p>
         ))}
@@ -80,5 +80,5 @@ export default function WikiSummary({ name, fallback }: WikiSummaryProps) {
     );
   }
 
-  return <p className="text-gray-400 italic">No summary available.</p>;
+  return <p className="text-muted italic">No summary available.</p>;
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import AlbumCover from '@/components/AlbumCover';
 import AlbumModal from '@/components/AlbumModal';
 import { useMusic } from '@/context/MusicContext';
+import { Album } from '@/lib/types';
 
 interface AlbumSearchResult {
   title: string;
@@ -13,7 +14,17 @@ interface AlbumSearchResult {
 }
 
 export default function LibraryPage() {
-  const { library, addAlbumToLibrary, removeAlbumFromLibrary, handleRate, isLoading, isAuthenticated, authReady } = useMusic();
+  const {
+    library,
+    addAlbumToLibrary,
+    removeAlbumFromLibrary,
+    handleRate,
+    getPlaybackUrl,
+    getPlaybackLabel,
+    isLoading,
+    isAuthenticated,
+    authReady,
+  } = useMusic();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('dateAdded');
   const [isAdding, setIsAdding] = useState(false);
@@ -23,11 +34,49 @@ export default function LibraryPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [modalAlbum, setModalAlbum] = useState<Album | null>(null);
+  const [isModalLoading, setIsModalLoading] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   const selectedAlbum = useMemo(
     () => library.find(album => album.id === selectedAlbumId) || null,
     [library, selectedAlbumId]
   );
+
+  const openAlbumModal = async (album: typeof library[number]) => {
+    setSelectedAlbumId(album.id);
+    setModalAlbum(null);
+    setModalError('');
+    setIsModalLoading(true);
+    try {
+      const response = await fetch('/api/album-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          albums: [{ title: album.title, artist: album.artist.name }],
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to load album details');
+      }
+      const [details] = await response.json();
+      if (!details) {
+        throw new Error('Album details not found');
+      }
+      setModalAlbum({
+        ...details,
+        id: album.id,
+        rating: album.rating,
+        listened: album.listened,
+        skipped: album.skipped,
+        dateAdded: album.dateAdded,
+      });
+    } catch (error) {
+      setModalError(error instanceof Error ? error.message : 'Failed to load album details');
+    } finally {
+      setIsModalLoading(false);
+    }
+  };
 
   const filteredAndSortedLibrary = library
     .filter(album => 
@@ -47,22 +96,22 @@ export default function LibraryPage() {
     });
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4 text-white">Your Library</h1>
+    <div className="container mx-auto px-6 py-12 max-w-5xl">
+      <h1 className="text-4xl font-serif mb-8">Library</h1>
       
       {/* Controls */}
-      <div className="bg-gray-800 p-4 rounded-lg shadow-lg mb-6 flex flex-col sm:flex-row gap-4">
+      <div className="mb-8 flex flex-col sm:flex-row gap-4">
         <input
           type="text"
           placeholder="Search by album or artist..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-grow p-2 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+          className="flex-grow p-2 bg-transparent border-b divider focus:outline-none text-muted"
         />
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+          className="p-2 bg-transparent border-b divider focus:outline-none text-muted"
         >
           <option value="dateAdded">Sort by Date Added</option>
           <option value="rating">Sort by Rating</option>
@@ -70,21 +119,21 @@ export default function LibraryPage() {
         </select>
         <button
           onClick={() => setIsAdding((prev) => !prev)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold"
+          className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
         >
           {isAdding ? 'Close' : 'Add Album'}
         </button>
       </div>
 
       {isAdding && (
-        <div className="bg-gray-800 p-4 rounded-lg shadow-lg mb-6">
+        <div className="mb-10">
           <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
               placeholder="Type album and artist (e.g. Selected Ambient Works Aphex Twin)"
               value={addQuery}
               onChange={(e) => setAddQuery(e.target.value)}
-              className="flex-grow p-2 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+              className="flex-grow p-2 bg-transparent border-b divider focus:outline-none text-muted"
               disabled={isSearching || isLoading}
             />
             <button
@@ -103,8 +152,10 @@ export default function LibraryPage() {
                   if (results.length === 0) {
                     setAddError('No matches found. Try a different spelling.');
                   } else if (results.length === 1) {
-                    await addAlbumToLibrary({ title: results[0].title, artist: results[0].artist });
+                    void addAlbumToLibrary({ title: results[0].title, artist: results[0].artist });
                     setAddQuery('');
+                    setSearchResults([]);
+                    setIsAdding(false);
                   } else {
                     setSearchResults(results);
                   }
@@ -114,36 +165,37 @@ export default function LibraryPage() {
                   setIsSearching(false);
                 }
               }}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white font-semibold disabled:bg-gray-600"
+              className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4 disabled:text-muted"
               disabled={!addQuery.trim() || isSearching || isLoading}
             >
               {isSearching ? 'Searching...' : 'Find Album'}
             </button>
           </div>
-          {addError && <p className="text-sm text-red-300 mt-3">{addError}</p>}
+          {addError && <p className="text-sm text-red-700 mt-3">{addError}</p>}
 
           {searchResults.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm text-gray-400 mb-3">
+              <p className="text-sm text-muted mb-3">
                 Multiple matches found. Click an album to add it to your library.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {searchResults.map((album) => (
                   <button
                     key={`${album.title}-${album.artist}`}
                     onClick={async () => {
-                      await addAlbumToLibrary({ title: album.title, artist: album.artist });
+                      void addAlbumToLibrary({ title: album.title, artist: album.artist });
                       setSearchResults([]);
                       setAddQuery('');
+                      setIsAdding(false);
                     }}
-                    className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition-colors text-left"
+                    className="text-left"
                   >
                     <div className="relative w-full h-40">
                       <AlbumCover src={album.coverUrl} alt={album.title} />
                     </div>
                     <div className="p-3">
-                      <p className="text-sm font-semibold text-white">{album.title}</p>
-                      <p className="text-xs text-gray-400">{album.artist}</p>
+                      <p className="text-sm font-semibold">{album.title}</p>
+                      <p className="text-xs text-muted">{album.artist}</p>
                     </div>
                   </button>
                 ))}
@@ -154,31 +206,31 @@ export default function LibraryPage() {
       )}
 
       {!authReady ? (
-        <p className="text-gray-400">Checking sign-in status...</p>
+        <p className="text-muted">Checking sign-in status...</p>
       ) : !isAuthenticated ? (
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 text-gray-200">
-          <h2 className="text-xl font-bold mb-2">Sign in required</h2>
-          <p className="text-gray-400">Sign in to view and manage your library.</p>
+        <div className="mt-10">
+          <h2 className="text-3xl font-serif mb-2">Sign in required</h2>
+          <p className="text-muted">Sign in to view and manage your library.</p>
         </div>
       ) : filteredAndSortedLibrary.length > 0 ? (
         <div className="space-y-3">
           {filteredAndSortedLibrary.map(album => (
             <div
               key={album.id}
-              className="flex items-center gap-4 bg-gray-800 rounded-lg p-3 border border-gray-700"
+              className="flex items-center gap-4 pb-4 border-b divider"
             >
               <button
-                onClick={() => setSelectedAlbumId(album.id)}
-                className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-md overflow-hidden"
+                onClick={() => openAlbumModal(album)}
+                className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden"
               >
                 <AlbumCover src={album.coverUrl} alt={album.title} />
               </button>
               <button
-                onClick={() => setSelectedAlbumId(album.id)}
+                onClick={() => openAlbumModal(album)}
                 className="min-w-0 flex-1 text-left"
               >
-                <p className="text-white font-semibold truncate">{album.title}</p>
-                <p className="text-sm text-gray-400 truncate">{album.artist.name}</p>
+                <p className="font-semibold truncate">{album.title}</p>
+                <p className="text-sm text-muted truncate">{album.artist.name}</p>
                 <div className="flex items-center gap-1 mt-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -187,7 +239,7 @@ export default function LibraryPage() {
                         event.stopPropagation();
                         handleRate(album.id, star as 1 | 2 | 3 | 4 | 5);
                       }}
-                      className={star <= (album.rating || 0) ? 'text-yellow-400' : 'text-gray-600'}
+                      className={star <= (album.rating || 0) ? 'text-yellow-600' : 'text-muted'}
                       aria-label={`Rate ${album.title} ${star} stars`}
                       title={`Rate ${star} stars`}
                     >
@@ -198,18 +250,14 @@ export default function LibraryPage() {
               </button>
               <div className="flex items-center gap-2">
                 <a
-                  href={
-                    album.appleMusicUrl
-                      ? album.appleMusicUrl.replace(/^https?:\/\//, 'music://')
-                      : `music://music.apple.com/us/search?term=${encodeURIComponent(album.title)}+${encodeURIComponent(album.artist.name)}`
-                  }
-                  className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded-md"
+                  href={getPlaybackUrl(album)}
+                  className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
                 >
-                  Play
+                  {getPlaybackLabel()}
                 </a>
                 <button
                   onClick={() => setConfirmRemoveId(album.id)}
-                  className="px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-md"
+                  className="text-sm text-muted underline decoration-transparent hover:decoration-current underline-offset-4"
                 >
                   Remove
                 </button>
@@ -218,30 +266,61 @@ export default function LibraryPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-10">
-          <p className="text-gray-400">Your library is empty.</p>
-          <p className="text-gray-500 text-sm">Albums you rate or mark as &apos;Listened&apos; will appear here.</p>
+        <div className="py-10">
+          <p className="text-muted">Your library is empty.</p>
+          <p className="text-muted text-sm">Albums you rate or mark as &apos;Listened&apos; will appear here.</p>
         </div>
       )}
 
-      {selectedAlbum && (
+      {selectedAlbum && modalAlbum && (
         <AlbumModal
-          album={selectedAlbum}
-          onClose={() => setSelectedAlbumId(null)}
+          album={modalAlbum}
+          onClose={() => {
+            setSelectedAlbumId(null);
+            setModalAlbum(null);
+            setModalError('');
+          }}
         />
       )}
 
+      {selectedAlbum && isModalLoading && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg)] rounded-lg shadow-xl max-w-sm w-full p-6">
+            <p className="text-sm text-muted">Loading album details...</p>
+          </div>
+        </div>
+      )}
+
+      {selectedAlbum && modalError && !isModalLoading && !modalAlbum && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg)] rounded-lg shadow-xl max-w-sm w-full p-6">
+            <p className="text-sm text-red-700">{modalError}</p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => {
+                  setSelectedAlbumId(null);
+                  setModalError('');
+                }}
+                className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {confirmRemoveId && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg shadow-xl max-w-sm w-full p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Remove album?</h3>
-            <p className="text-sm text-gray-400 mb-5">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg)] rounded-lg shadow-xl max-w-sm w-full p-6">
+            <h3 className="text-lg font-serif mb-3">Remove album?</h3>
+            <p className="text-sm text-muted mb-5">
               This will remove the album from your library.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setConfirmRemoveId(null)}
-                className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-md"
+                className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
               >
                 Cancel
               </button>
@@ -250,7 +329,7 @@ export default function LibraryPage() {
                   removeAlbumFromLibrary(confirmRemoveId);
                   setConfirmRemoveId(null);
                 }}
-                className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-md"
+                className="text-sm text-red-700 underline decoration-transparent hover:decoration-current underline-offset-4"
               >
                 Remove
               </button>

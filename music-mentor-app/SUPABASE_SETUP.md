@@ -41,8 +41,12 @@ npm run dev -- -H 0.0.0.0 -p 3001
 ```
 
 ## What gets stored
-- User prompt per user (`user_prompts`)
+- User prompt per user (`user_prompts`) with last user-written prompt
+- Prompt history per user (`user_prompt_history`)
 - Library albums per user (`library_albums`)
+- Last recommendations per user (`user_recommendations`)
+- Seen recommendations per user (`user_seen_recommendations`)
+- User settings (`user_settings`)
 
 ## Admin panel
 - Visit `/admin` and enter `ADMIN_SECRET` to list users or reset passwords.

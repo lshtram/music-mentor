@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabaseServer
     .from('library_albums')
-    .select('*')
+    .select('id, title, artist_id, artist_name, cover_url, preview_url, apple_music_url, rating, listened, skipped, date_added')
     .eq('user_id', userId)
     .order('date_added', { ascending: false });
 
@@ -40,19 +40,18 @@ export async function GET(request: Request) {
     artist: {
       id: row.artist_id,
       name: row.artist_name,
-      bio: row.artist_bio || undefined,
     },
     coverUrl: row.cover_url || '',
     previewUrl: row.preview_url || undefined,
     appleMusicUrl: row.apple_music_url || undefined,
-    summary: row.summary || '',
+    summary: '',
     rating: row.rating ?? undefined,
     listened: row.listened ?? true,
     dateAdded: row.date_added || undefined,
     skipped: row.skipped ?? false,
-    personnel: row.personnel || undefined,
-    releaseYear: row.release_year || undefined,
-    genres: row.genres || undefined,
+    personnel: undefined,
+    releaseYear: undefined,
+    genres: undefined,
   }));
 
   return Response.json(albums);
@@ -75,18 +74,18 @@ export async function POST(request: Request) {
       title: album.title,
       artist_id: album.artist.id,
       artist_name: album.artist.name,
-      artist_bio: album.artist.bio || null,
       cover_url: album.coverUrl || null,
       preview_url: album.previewUrl || null,
       apple_music_url: album.appleMusicUrl || null,
-      summary: album.summary || null,
       rating: album.rating ?? null,
       listened: album.listened ?? true,
       skipped: album.skipped ?? false,
       date_added: album.dateAdded || new Date().toISOString(),
-      personnel: album.personnel || null,
-      release_year: album.releaseYear || null,
-      genres: album.genres || null,
+      artist_bio: null,
+      summary: null,
+      personnel: null,
+      release_year: null,
+      genres: null,
     };
 
     const { error } = await supabaseServer

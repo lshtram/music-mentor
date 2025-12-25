@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Libre_Baskerville, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { MusicProvider } from "@/context/MusicContext";
 import ClientGate from "@/components/ClientGate";
 
-const inter = Inter({ subsets: ["latin"] });
+const serif = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-serif",
+});
+
+const sans = Source_Sans_3({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "SoundPath",
@@ -19,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-950 text-gray-100`}>
+      <body className={`${serif.variable} ${sans.variable}`}>
         <ClientGate>
           <MusicProvider>
             <Header />

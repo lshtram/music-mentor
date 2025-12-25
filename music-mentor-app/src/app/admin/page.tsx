@@ -67,71 +67,71 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 text-gray-100">
-      <h1 className="text-3xl font-bold mb-4">Admin</h1>
+    <div className="container mx-auto px-6 py-12 max-w-4xl">
+      <h1 className="text-4xl font-serif mb-8">Admin</h1>
 
-      <div className="bg-gray-800 rounded-lg p-4 mb-6">
-        <label className="block text-sm text-gray-300 mb-2">Admin secret</label>
+      <div className="mb-8">
+        <label className="block text-sm text-muted mb-2">Admin secret</label>
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="password"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             placeholder="Enter ADMIN_SECRET"
-            className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-md"
+            className="flex-1 px-3 py-2 bg-transparent border-b divider focus:outline-none"
           />
           <button
             onClick={loadUsers}
             disabled={!secret || loading}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-600"
+            className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4 disabled:text-muted"
           >
             {loading ? 'Loading...' : 'Load users'}
           </button>
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-3">Reset password</h2>
+      <div className="mb-8">
+        <h2 className="text-2xl font-serif mb-4">Reset password</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <input
             type="text"
             value={resetUserId}
             onChange={(e) => setResetUserId(e.target.value)}
             placeholder="User ID"
-            className="px-3 py-2 bg-gray-900 border border-gray-700 rounded-md"
+            className="px-3 py-2 bg-transparent border-b divider focus:outline-none"
           />
           <input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="New password"
-            className="px-3 py-2 bg-gray-900 border border-gray-700 rounded-md"
+            className="px-3 py-2 bg-transparent border-b divider focus:outline-none"
           />
           <button
             onClick={resetPassword}
             disabled={!secret || !resetUserId || !newPassword || loading}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md disabled:bg-gray-600"
+            className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4 disabled:text-muted"
           >
             {loading ? 'Saving...' : 'Reset'}
           </button>
         </div>
       </div>
 
-      {error && <p className="text-red-300 mb-4">{error}</p>}
-      {status && <p className="text-green-300 mb-4">{status}</p>}
+      {error && <p className="text-red-700 mb-4">{error}</p>}
+      {status && <p className="text-[var(--accent)] mb-4">{status}</p>}
 
-      <div className="bg-gray-800 rounded-lg p-4">
-        <h2 className="text-lg font-semibold mb-3">Users</h2>
+      <div>
+        <h2 className="text-2xl font-serif mb-4">Users</h2>
         {users.length === 0 ? (
-          <p className="text-gray-400">No users loaded.</p>
+          <p className="text-muted">No users loaded.</p>
         ) : (
           <div className="space-y-3">
             {users.map((user) => (
-              <div key={user.id} className="bg-gray-900 p-3 rounded-md border border-gray-700">
-                <p className="text-sm text-gray-300">ID: {user.id}</p>
-                <p className="text-sm text-gray-300">Email: {user.email || '—'}</p>
-                <p className="text-xs text-gray-500">Created: {user.createdAt || '—'}</p>
-                <p className="text-xs text-gray-500">Last sign-in: {user.lastSignInAt || '—'}</p>
+              <div key={user.id} className="pb-3 border-b divider">
+                <p className="text-sm text-muted">ID: {user.id}</p>
+                <p className="text-sm text-muted">Email: {user.email || '—'}</p>
+                <p className="text-xs text-muted">Created: {user.createdAt || '—'}</p>
+                <p className="text-xs text-muted">Last sign-in: {user.lastSignInAt || '—'}</p>
               </div>
             ))}
           </div>

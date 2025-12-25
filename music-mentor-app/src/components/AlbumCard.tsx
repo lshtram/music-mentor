@@ -9,13 +9,13 @@ import ArtistModal from './ArtistModal';
 
 // SVG Icon Components
 const StarIcon = ({ filled }: { filled: boolean }) => (
-  <svg className={`w-6 h-6 ${filled ? 'text-yellow-400' : 'text-gray-600'} cursor-pointer`} fill="currentColor" viewBox="0 0 20 20">
+  <svg className={`w-6 h-6 ${filled ? 'text-yellow-600' : 'text-gray-400'} cursor-pointer`} fill="currentColor" viewBox="0 0 20 20">
     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.539 1.118l-3.368-2.448a1 1 0 00-1.176 0l-3.368 2.448c-.784.57-1.838-.197-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z" />
   </svg>
 );
 
-export default function AlbumCard({ album }: { album: Album }) {
-  const { handleRate, handleMarkAsListened, handleSkip } = useMusic();
+export default function AlbumCard({ album, isRefreshing }: { album: Album; isRefreshing?: boolean }) {
+  const { handleRate, handleMarkAsListened, handleSkip, getPlaybackUrl, getPlaybackLabel } = useMusic();
   const [hoverRating, setHoverRating] = useState(0);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
   const [showArtistModal, setShowArtistModal] = useState(false);
@@ -58,86 +58,90 @@ export default function AlbumCard({ album }: { album: Album }) {
 
   return (
     <>
-      <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out flex flex-col sm:flex-row md:flex-col">
+      <div className={`relative flex flex-col md:flex-row gap-5 pb-6 border-b divider ${isRefreshing ? 'opacity-60' : ''}`}>
+        {isRefreshing && (
+          <div className="absolute bottom-4 right-4 z-10">
+            <div className="loading-pill text-[10px] uppercase tracking-[0.28em] text-[var(--bg)] px-3 py-1 rounded-full shadow-lg">
+              Refreshing
+            </div>
+          </div>
+        )}
         {/* Album Cover - Clickable */}
         <button
           onClick={() => setShowAlbumModal(true)}
-          className="relative w-full h-56 hover:opacity-90 transition-opacity sm:w-28 sm:h-28 sm:shrink-0 md:w-full md:h-56"
+          className="relative w-full h-72 hover:opacity-90 transition-opacity md:w-56 md:h-56 md:shrink-0"
         >
           <AlbumCover src={album.coverUrl} alt={album.title} />
           <div className="absolute bottom-2 left-2">
             <button
               onClick={handlePreviewToggle}
               disabled={!album.previewUrl}
-              className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg border border-black/30 ${
-                album.previewUrl ? 'bg-white/90 hover:bg-white' : 'bg-gray-500/70 cursor-not-allowed'
+              className={`w-9 h-9 rounded-full flex items-center justify-center border ${
+                album.previewUrl ? 'bg-[var(--bg)] border-[var(--text)]' : 'bg-transparent border-[var(--divider)] cursor-not-allowed'
               }`}
               aria-label={album.previewUrl ? 'Play preview' : 'Preview unavailable'}
               title={album.previewUrl ? 'Play preview' : 'Preview unavailable'}
             >
               {isPlaying ? (
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-900">
+                <svg viewBox="0 0 24 24" className="w-4 h-4">
                   <rect x="5" y="4" width="4" height="16" rx="1" />
                   <rect x="15" y="4" width="4" height="16" rx="1" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-900 ml-0.5">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 ml-0.5">
                   <path d="M6 5v14l12-7z" />
                 </svg>
               )}
             </button>
           </div>
         </button>
-        <div className="p-4 flex flex-col flex-grow sm:py-3 sm:px-4 md:p-4">
+        <div className="flex flex-col flex-grow">
           {/* Album Title - Clickable */}
-          <button
-            onClick={() => setShowAlbumModal(true)}
-            className="text-xl font-bold text-white hover:text-blue-400 transition-colors text-left"
-          >
-            {album.title}
-          </button>
+          <div className="flex flex-col gap-1">
+            <button
+              onClick={() => setShowAlbumModal(true)}
+              className="text-2xl font-serif text-left hover:underline underline-offset-4"
+            >
+              {album.title}
+            </button>
+            
+            {/* Artist Name - Clickable */}
+            <button
+              onClick={() => setShowArtistModal(true)}
+              className="text-base uppercase tracking-[0.2em] text-muted hover:text-[var(--text)] hover:underline text-left"
+            >
+              {album.artist.name}
+            </button>
+          </div>
           
-          {/* Artist Name - Clickable */}
-          <button
-            onClick={() => setShowArtistModal(true)}
-            className="text-md text-gray-300 hover:text-blue-400 hover:underline transition-colors text-left"
-          >
-            {album.artist.name}
-          </button>
+          <p className="text-base text-muted mt-4 leading-relaxed">{album.summary}</p>
           
-          <p className="text-sm text-gray-400 mt-2 flex-grow">{album.summary}</p>
-          
-          <div className="mt-4 pt-4 border-t border-gray-700">
-              <p className="text-sm font-semibold text-gray-300 mb-2">Rating</p>
-              <div className="flex items-center space-x-1 mb-3">
+          <div className="mt-4 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted">Rating</span>
                 {[1, 2, 3, 4, 5].map((star) => (
                     <button 
                       key={star} 
                       onClick={() => handleRate(album.id, star as any)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
-                      className="transition-transform hover:scale-110"
+                      className="transition-transform hover:scale-105"
                     >
-                      <div className={`w-6 h-6 ${hoverRating >= star || rating >= star ? 'text-yellow-400' : 'text-gray-600'} cursor-pointer`}>
+                      <div className="text-lg cursor-pointer">
                         <StarIcon filled={hoverRating >= star || rating >= star} />
                       </div>
                     </button>
                 ))}
               </div>
-              <button onClick={() => handleMarkAsListened(album.id)} className="w-full px-3 py-2 text-sm bg-green-600 hover:bg-green-700 rounded-full mb-2">Listened</button>
-            
-              <div className="flex space-x-2">
-                <a
-                  href={
-                    album.appleMusicUrl
-                      ? album.appleMusicUrl.replace(/^https?:\/\//, 'music://')
-                      : `music://music.apple.com/us/search?term=${encodeURIComponent(album.title)}+${encodeURIComponent(album.artist.name)}`
-                  }
-                  className="flex-1 text-center px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded-md"
+              <div className="flex flex-wrap gap-4 text-sm">
+                <button onClick={() => handleMarkAsListened(album.id)} className="underline decoration-transparent hover:decoration-current underline-offset-4">Save to library</button>
+                 <a
+                  href={getPlaybackUrl(album)}
+                  className="underline decoration-transparent hover:decoration-current underline-offset-4"
                 >
-                  Play
+                  {getPlaybackLabel()}
                 </a>
-                <button onClick={() => handleSkip(album.id)} className="flex-1 px-3 py-2 text-sm bg-gray-600 hover:bg-gray-700 rounded-md">Skip</button>
+                <button onClick={() => handleSkip(album.id)} className="underline decoration-transparent hover:decoration-current underline-offset-4 text-muted">Set aside</button>
               </div>
           </div>
         </div>

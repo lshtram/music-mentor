@@ -3,31 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --bg: #faf9f7;
+  --text: #1f1f1f;
+  --text-muted: #6b6b6b;
+  --divider: #e6e4e1;
+  --accent: #2f3a56;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-sans, ui-sans-serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--accent);
+}
+
+.font-serif {
+  font-family: var(--font-serif, ui-serif);
+  letter-spacing: 0.01em;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.divider {
+  border-color: var(--divider);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.loading-pill {
+  background-image: linear-gradient(
+    90deg,
+    rgba(31, 31, 31, 0.95) 0%,
+    rgba(47, 58, 86, 0.95) 50%,
+    rgba(31, 31, 31, 0.95) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
 }

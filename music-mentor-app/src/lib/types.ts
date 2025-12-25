@@ -31,3 +31,8 @@ export interface AlbumSeed {
   title: string;
   artist: string;
 }
+
+export interface UserSettings {
+  recommendationsCount: number;
+  preferredMusicApp: 'apple' | 'spotify' | 'other';
+}

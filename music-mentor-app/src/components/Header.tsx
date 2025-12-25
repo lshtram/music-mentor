@@ -9,27 +9,30 @@ export default function Header() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
-  const [status, setStatus] = useState('');
 
   return (
-    <header className="bg-gray-900 text-white shadow-md">
-      <nav className="container mx-auto px-6 py-4 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
-        <Link href="/" className="text-2xl font-bold text-white hover:text-gray-300">
-          SoundPath
+    <header className="border-b divider">
+      <nav className="container mx-auto px-6 py-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <Link href="/" className="flex items-center gap-3 text-3xl font-serif tracking-[0.12em]">
+          <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+          <span>SoundPath</span>
         </Link>
-        <div className="flex items-center gap-4 flex-wrap">
-          <Link href="/" className="hover:text-gray-300">
-            Recommendations
+        <div className="flex items-center gap-6 flex-wrap text-sm">
+          <Link href="/" className="text-muted hover:text-[var(--text)]">
+            Home
           </Link>
-          <Link href="/library" className="hover:text-gray-300">
+          <Link href="/library" className="text-muted hover:text-[var(--text)]">
             Library ({library.length})
+          </Link>
+          <Link href="/settings" className="text-muted hover:text-[var(--text)]">
+            Settings
           </Link>
           {authReady && userEmail ? (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-300">{userEmail}</span>
+              <span className="text-muted">{userEmail}</span>
               <button
                 onClick={() => signOut()}
-                className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-md"
+                className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
               >
                 Sign out
               </button>
@@ -41,28 +44,26 @@ export default function Header() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+                className="px-2 py-1 text-sm bg-transparent border-b divider focus:outline-none"
               />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+                className="px-2 py-1 text-sm bg-transparent border-b divider focus:outline-none"
               />
               <button
                 onClick={async () => {
-                  setStatus('');
                   await signInWithEmail(email, password, mode);
-                  setStatus(mode === 'sign-up' ? 'Account created.' : 'Signed in.');
                 }}
-                className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 rounded-md"
+                className="text-sm underline decoration-transparent hover:decoration-current underline-offset-4"
               >
                 {mode === 'sign-up' ? 'Sign up' : 'Sign in'}
               </button>
               <button
                 onClick={() => setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in')}
-                className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-md"
+                className="text-sm text-muted underline decoration-transparent hover:decoration-current underline-offset-4"
               >
                 {mode === 'sign-in' ? 'Create account' : 'Use existing'}
               </button>
@@ -70,8 +71,7 @@ export default function Header() {
           )}
         </div>
       </nav>
-      {status && <p className="px-6 pb-3 text-sm text-gray-300">{status}</p>}
-      {error && <p className="px-6 pb-3 text-sm text-red-300">{error}</p>}
+      {error && <p className="px-6 pb-4 text-sm text-red-700">{error}</p>}
     </header>
   );
 }

@@ -38,24 +38,22 @@ export default function AlbumCover({ src, alt }: AlbumCoverProps) {
   if (!src || src.trim() === '') {
     return (
       <div className="w-full h-full flex items-center justify-center p-4" style={{ backgroundColor: stringToColor(alt) }}>
-        <p className="text-white font-bold text-sm sm:text-lg">{alt}</p>
+        <p className="text-sm sm:text-lg text-muted">{alt}</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full relative bg-gray-100 overflow-hidden" style={{ backgroundColor: stringToColor(alt) }}>
+    <div className="w-full h-full relative overflow-hidden" style={{ backgroundColor: stringToColor(alt) }}>
       {!loaded && !errored && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="animate-pulse text-white opacity-80">
-            <p className="text-sm">Loading...</p>
-          </div>
+        <div className="absolute inset-0">
+          <div className="h-full w-full animate-pulse bg-[var(--divider)] opacity-70" />
         </div>
       )}
 
       {errored ? (
         <div className="w-full h-full flex items-center justify-center p-4">
-          <p className="text-white font-bold">{alt}</p>
+          <p className="text-sm text-muted">{alt}</p>
         </div>
       ) : (
         // Use a normal <img> to avoid Next Image host whitelist problems
