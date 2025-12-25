@@ -40,6 +40,7 @@
 - Library list
 - Add album flow (search + disambiguation)
 - Opens modal and fetches album details on demand
+- Pagination at 20 albums per page
 
 `src/app/settings/page.tsx`
 - Base quest summary (prompt history)
@@ -83,6 +84,7 @@
 `src/app/api/prompt-randomize/route.ts`
 - Uses AI to generate a fresh prompt
 - Must be adjacent to current taste and library
+- Enforces "How about albums like..." prefix and avoids specific album names
 
 ### Base Quest
 `src/app/api/base-quest/route.ts`

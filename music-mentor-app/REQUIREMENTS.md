@@ -30,6 +30,8 @@
 - "Randomize prompt" generates a new prompt using AI:
   - Based on current prompt and library
   - Expands taste slightly
+  - Must avoid naming specific albums or artists
+  - Must start with “How about albums like…”
   - Does not auto-regenerate recommendations
 - "Original quest" restores the last user-written prompt:
   - If none exists, fallback to the default prompt
@@ -44,6 +46,7 @@
 - Library lists albums saved by the user.
 - Stored data should be minimal (title, artist, cover, rating, playback link).
 - Album details are fetched on demand when a library item is opened.
+- Library is paginated at 20 albums per page.
 - Users can:
   - Rate albums (1–5 stars)
   - Remove albums (with confirmation)

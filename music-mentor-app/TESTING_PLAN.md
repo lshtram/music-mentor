@@ -95,6 +95,7 @@ E2E tests run locally via the pre-commit hook.
 - `tests/settings.route.test.ts` - settings load/save/clamp
 - `tests/library.route.test.ts` - library read/write
 - `tests/recommendationsStore.route.test.ts` - recommendation storage
+- `tests/pagination.test.ts` - library pagination helper
 
 ### E2E
 - `tests/e2e/basic.spec.ts` - home loads, settings and library sign-in gating

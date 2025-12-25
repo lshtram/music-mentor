@@ -64,6 +64,8 @@ Return ONLY a valid JSON object in this exact format:
 Rules:
 - One sentence max.
 - Avoid repeating the current prompt verbatim.
+- Do not mention specific albums or artists.
+- The sentence must start with "How about albums like".
 - Be specific about the angle (era, region, instrument, production style, or mood).
 - No markdown or extra text.`;
 
@@ -78,8 +80,11 @@ Rules:
     content = content.replace(/,\s*([}\]])/g, '$1');
 
     const parsed = JSON.parse(content);
-    const nextPrompt =
+    let nextPrompt =
       typeof parsed?.prompt === 'string' ? parsed.prompt.trim() : '';
+    if (nextPrompt && !nextPrompt.toLowerCase().startsWith('how about albums like')) {
+      nextPrompt = `How about albums like ${nextPrompt.replace(/^[^a-z0-9]+/i, '')}`;
+    }
 
     if (!nextPrompt) {
       return Response.json({ error: 'Failed to generate prompt' }, { status: 500 });

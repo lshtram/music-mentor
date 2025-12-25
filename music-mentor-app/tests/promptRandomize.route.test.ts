@@ -41,6 +41,6 @@ describe('/api/prompt-randomize', () => {
     const response = await POST(request);
     expect(response.status).toBe(200);
     const json = await response.json();
-    expect(json.prompt).toContain('nocturnal');
+    expect(json.prompt.toLowerCase()).toContain('how about albums like');
   });
 });

@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AlbumCover from '@/components/AlbumCover';
 import AlbumModal from '@/components/AlbumModal';
 import { useMusic } from '@/context/MusicContext';
 import { Album } from '@/lib/types';
+import { paginate } from '@/lib/pagination';
 
 interface AlbumSearchResult {
   title: string;
@@ -37,6 +38,7 @@ export default function LibraryPage() {
   const [modalAlbum, setModalAlbum] = useState<Album | null>(null);
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [modalError, setModalError] = useState('');
+  const [page, setPage] = useState(1);
 
   const selectedAlbum = useMemo(
     () => library.find(album => album.id === selectedAlbumId) || null,
@@ -94,6 +96,15 @@ export default function LibraryPage() {
           return new Date(b.dateAdded || 0).getTime() - new Date(a.dateAdded || 0).getTime();
       }
     });
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredAndSortedLibrary.length / 20));
+    if (page > maxPage) {
+      setPage(1);
+    }
+  }, [filteredAndSortedLibrary.length, page]);
+
+  const { items: pagedLibrary, totalPages, page: currentPage } = paginate(filteredAndSortedLibrary, page, 20);
 
   return (
     <div className="container mx-auto px-6 py-12 max-w-5xl">
@@ -213,8 +224,9 @@ export default function LibraryPage() {
           <p className="text-muted">Sign in to view and manage your library.</p>
         </div>
       ) : filteredAndSortedLibrary.length > 0 ? (
+        <>
         <div className="space-y-3">
-          {filteredAndSortedLibrary.map(album => (
+          {pagedLibrary.map(album => (
             <div
               key={album.id}
               className="flex items-center gap-4 pb-4 border-b divider"
@@ -265,6 +277,26 @@ export default function LibraryPage() {
             </div>
           ))}
         </div>
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between text-sm text-muted">
+            <button
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="underline decoration-transparent hover:decoration-current underline-offset-4 disabled:text-muted"
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="underline decoration-transparent hover:decoration-current underline-offset-4 disabled:text-muted"
+            >
+              Next
+            </button>
+          </div>
+        )}
+        </>
       ) : (
         <div className="py-10">
           <p className="text-muted">Your library is empty.</p>
