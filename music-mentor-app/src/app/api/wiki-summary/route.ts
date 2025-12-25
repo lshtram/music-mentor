@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 const WIKI_BASE_URL = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
 
 export async function GET(request: Request) {

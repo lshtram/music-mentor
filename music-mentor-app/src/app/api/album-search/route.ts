@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { albumSeedKey } from '@/lib/albumLookup';
 
 interface AlbumSearchResult {

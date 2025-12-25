@@ -247,7 +247,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadUserData();
-  }, [userId, accessToken]);
+  }, [userId, accessToken, settings.recommendationsCount]);
 
   useEffect(() => {
     if (!userId || !hasHydrated || !accessToken) return;
@@ -627,7 +627,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
         return prev;
       });
     }, 50);
-  }, [regenerateRecommendations, userId, accessToken, albums]);
+  }, [regenerateRecommendations, userId, accessToken, albums, settings.recommendationsCount]);
 
   const signInWithEmail = useCallback(async (email: string, password: string, mode: 'sign-in' | 'sign-up') => {
     setError(null);
